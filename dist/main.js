@@ -43375,9 +43375,10 @@ function CanvasRenderer() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.controls = exports.renderer = exports.light = exports.camera = exports.scene = exports.height = exports.width = undefined;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _three = __webpack_require__(0);
 
@@ -43391,75 +43392,124 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var _getWindowSize = getWindowSize(),
-    _getWindowSize2 = _slicedToArray(_getWindowSize, 2);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var width = _getWindowSize2[0],
-    height = _getWindowSize2[1];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-//scene
+var BasicThree = function () {
+  function BasicThree(container) {
+    _classCallCheck(this, BasicThree);
 
-exports.width = width;
-exports.height = height;
-var scene = exports.scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xffffff, 90, 125);
+    this.container = container;
 
-// camera
-var camera = exports.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+    var _getSize = this.getSize();
 
-// light
-var light = exports.light = new THREE.PointLight(0xFFFFFF);
-light.position.set(10, 50, 130);
+    var _getSize2 = _slicedToArray(_getSize, 2);
 
-// renderer
-var container = document.querySelector('#container');
-var renderer = exports.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-container.appendChild(renderer.domElement);
-var canvas = document.querySelector("#container canvas");
-setSize();
+    this.width = _getSize2[0];
+    this.height = _getSize2[1];
 
-// controls
-var controls = exports.controls = new _orbitControlsEs2.default(camera, renderer.domElement);
-controls.enabled = true;
-controls.maxDistance = 1500;
-controls.minDistance = 0;
+    this.createScene();
+    this.createCamera();
+    this.createLight();
+    this.createRenderer();
+    this.createControls();
 
-// resize
-window.addEventListener('resize', setSize, false);
+    // resize
+    window.addEventListener('resize', this.updateSize.bind(this), false);
+    window.addEventListener('load', this.updateSize.bind(this), false);
+  }
 
-// init
-scene.add(light);
-scene.add(camera);
-camera.position.set(0, 70, 70);
+  _createClass(BasicThree, [{
+    key: 'createScene',
+    value: function createScene() {
+      var fogColor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0xffffff;
+      var fogPosition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [90, 125];
 
-// cube
-var cube = new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshNormalMaterial());
-cube.position.set(0, 0, 0);
-scene.add(cube);
-camera.lookAt(cube.position);
+      this.scene = new THREE.Scene();
+      this.scene.fog = new (Function.prototype.bind.apply(THREE.Fog, [null].concat([fogColor], _toConsumableArray(fogPosition))))();
+    }
+  }, {
+    key: 'createCamera',
+    value: function createCamera() {
+      var fov = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 45;
+      var nearPlane = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.1;
 
-//utils
+      var _camera$position;
 
-function getWindowSize() {
-  return [window.innerWidth * 2, window.innerHeight * 2];
-}
+      var farPlane = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 10000;
+      var position = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [20, 70, 70];
 
-function setSize() {
-  var _getWindowSize3 = getWindowSize();
+      this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearPlane, farPlane);
+      (_camera$position = this.camera.position).set.apply(_camera$position, _toConsumableArray(position));
+      this.camera.lookAt({ x: 0, y: 0, z: 0 });
+      this.scene.add(this.camera);
+    }
+  }, {
+    key: 'createLight',
+    value: function createLight() {
+      var _light$position;
 
-  var _getWindowSize4 = _slicedToArray(_getWindowSize3, 2);
+      var color = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0xFFFFFF;
+      var position = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [10, 50, 130];
 
-  exports.width = width = _getWindowSize4[0];
-  exports.height = height = _getWindowSize4[1];
+      var light = new THREE.PointLight(color);
+      (_light$position = light.position).set.apply(_light$position, _toConsumableArray(position));
+      this.scene.add(light);
+    }
+  }, {
+    key: 'createRenderer',
+    value: function createRenderer() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { alpha: true, antialias: true };
 
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(width, height);
-  // retina fix
-  canvas.style["max-width"] = width / 2 + 'px';
-  canvas.style["max-height"] = height / 2 + 'px';
-  renderer.render(scene, camera);
-}
+      this.renderer = new THREE.WebGLRenderer(opts);
+      this.container.appendChild(this.renderer.domElement);
+      this.updateSize();
+    }
+  }, {
+    key: 'createControls',
+    value: function createControls() {
+      this.controls = new _orbitControlsEs2.default(this.camera, this.renderer.domElement);
+      this.controls.enabled = true;
+      this.controls.addEventListener('change', this.render.bind(this));
+    }
+  }, {
+    key: 'getSize',
+    value: function getSize() {
+      return [this.container.clientWidth * 2, this.container.clientHeight * 2];
+    }
+  }, {
+    key: 'updateSize',
+    value: function updateSize() {
+      var _getSize3 = this.getSize(),
+          _getSize4 = _slicedToArray(_getSize3, 2),
+          width = _getSize4[0],
+          height = _getSize4[1];
+
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(width, height);
+      // retina fix
+      this.renderer.domElement.style["max-width"] = width / 2 + 'px';
+      this.renderer.domElement.style["max-height"] = height / 2 + 'px';
+
+      var _ref = [width, height];
+      this.width = _ref[0];
+      this.height = _ref[1];
+
+      this.renderer.render(this.scene, this.camera);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      this.renderer.render(this.scene, this.camera);
+    }
+  }]);
+
+  return BasicThree;
+}();
+
+exports.default = BasicThree;
 
 /***/ }),
 /* 2 */
@@ -43478,21 +43528,27 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _setup = __webpack_require__(1);
+var _basicthree = __webpack_require__(1);
+
+var _basicthree2 = _interopRequireDefault(_basicthree);
 
 __webpack_require__(2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 initialize();
 
 function initialize() {
-  _setup.controls.addEventListener('change', render);
-  render();
-}
+  var container = document.querySelector('#container');
+  var basicThree = new _basicthree2.default(container);
+  basicThree.camera.position.set(20, 70, 70);
 
-function render() {
-  _setup.renderer.render(_setup.scene, _setup.camera);
+  // add cube
+  var cube = new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshNormalMaterial());
+  cube.position.set(0, 0, 0);
+  basicThree.scene.add(cube);
 }
 
 /***/ }),
