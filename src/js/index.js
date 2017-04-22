@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { scene, camera, controls, renderer } from './setup';
 
-import '../../css/main.css';
+import '../css/main.css';
 
 initialize();
 
